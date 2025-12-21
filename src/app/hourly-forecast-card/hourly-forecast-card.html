@@ -1,0 +1,80 @@
+<a class="bg-slate-800 block max-w-sm p-6 rounded-base shadow-xs">
+  <div class="flex items-center justify-between mb-5">
+    <h5 class="text-lg font-semibold tracking-tight text-white">Hourly Forecast</h5>
+
+    <div class="relative" id="hourly-dropdown">
+      <button
+        id="hourly-dropdown-button"
+        data-dropdown-toggle="hourly-dropdown-menu"
+        class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-slate-700 border border-slate-600 rounded-lg hover:bg-slate-600 focus:ring-4 focus:ring-white/20 focus:outline-none transition-all duration-200"
+        type="button"
+      >
+        <span>{{ view.getDayName(store.selectedForecastDay()) }}</span>
+        <svg
+          class="w-4 h-4 transition-transform"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 9l-7 7-7-7"
+          ></path>
+        </svg>
+      </button>
+
+      <div
+        id="hourly-dropdown-menu"
+        class="z-50 hidden absolute top-full right-0 mt-1 w-36 bg-slate-800 border border-slate-700 rounded-lg shadow-xl"
+      >
+        <ul class="py-1 text-sm text-white">
+          @for (day of [1,2,3,4,5,6,7]; track day) {
+          <li>
+            <button
+              class="w-full text-left px-3 py-2 hover:bg-slate-700 rounded text-sm font-medium transition-colors"
+              role="menuitem"
+              (click)="store.setSelectedForecastDay(day)"
+            >
+              {{ view.getDayName(day) }}
+            </button>
+          </li>
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  @if (view.hourlyForecast().length === 0 && !store.isForecasting()) {
+  <div class="text-center text-gray-400 text-sm py-8">No forecast data</div>
+  } @if (view.hourlyForecast().length > 0) {
+  <div class="space-y-3">
+    @for (hour of view.hourlyForecast(); track hour.time) {
+    <div class="px-4 py-3 rounded-md flex justify-between items-center bg-slate-700">
+      <div class="flex items-center gap-4">
+        <img
+          [src]="view.getWeatherIcon(hour.weathercode)"
+          [alt]="hour.weathercode"
+          class="w-8 h-8"
+        />
+        <div class="text-lg font-bold text-white">{{ hour.displayTime }}</div>
+      </div>
+      <div class="text-md font-normal text-white">{{ hour.temperature }}°</div>
+    </div>
+    }
+  </div>
+  } @if (view.hourlyForecast().length === 0 && store.isForecasting()) {
+  <div class="space-y-3">
+    @for (item of [1,2,3,4]; track item) {
+    <div class="px-4 py-3 rounded-md flex justify-between items-center bg-slate-700">
+      <div class="flex items-center gap-4">
+        <div class="w-8 h-8 bg-slate-600 rounded-full animate-pulse"></div>
+        <div class="w-16 h-6 bg-slate-600 rounded animate-pulse"></div>
+      </div>
+      <div class="w-12 h-6 bg-slate-600 rounded animate-pulse"></div>
+    </div>
+    }
+  </div>
+  }
+</a>

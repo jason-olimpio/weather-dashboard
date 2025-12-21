@@ -1,0 +1,42 @@
+<div class="max-w-2xl mx-auto flex justify-center gap-2">
+  <div class="relative w-96">
+    <img
+      class="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 z-10"
+      src="images/icon-search.svg"
+    />
+
+    <input
+      #searchInput
+      type="search"
+      id="input-group-1"
+      class="pl-14 py-3 rounded-lg bg-slate-800 border-none focus:ring-1 focus:ring-white focus:border-white text-white placeholder:text-white w-full shadow-lg"
+      placeholder="Search for a place..."
+      [value]="store.locationQuery()"
+      (input)="store.locationQuery.set(searchInput.value)"
+      autocomplete="off"
+    />
+
+    @if (store.isGeocoding()) {
+    <div
+      class="absolute top-full left-0 right-0 mt-2 p-3 bg-slate-800 rounded-lg shadow-xl z-50 flex items-center justify-center"
+    >
+      <div class="animate-spin rounded-full h-5 w-5 border-2 border-slate-600 border-t-white"></div>
+    </div>
+    } @if (view.showLocationDropdown()) {
+    <div
+      class="absolute top-full p-2 left-0 right-0 mt-2 bg-slate-800 rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto"
+    >
+      @for (location of store.locationResults() | slice:0:4; track location.id || $index) {
+      <div
+        class="px-3 py-2 rounded-md hover:bg-slate-700 cursor-pointer border-slate-700"
+        (click)="store.selectLocation(location)"
+      >
+        <p class="text-white text-sm truncate">{{ location.name }}, {{ location.country }}</p>
+      </div>
+      } @empty {
+      <div class="px-3 py-2 text-gray-400 text-sm text-center">No results found</div>
+      }
+    </div>
+    }
+  </div>
+</div>
