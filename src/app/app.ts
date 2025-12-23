@@ -1,14 +1,13 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { initFlowbite } from 'flowbite';
+import { Component, inject } from '@angular/core';
 
 import { Header } from './header/header';
 import { SearchBar } from './search-bar/search-bar';
 
-import { WeatherStore } from './store/weather.store';
-
 import { WeatherCard } from './weather-card/weather-card';
 import { HourlyForecastCard } from './hourly-forecast-card/hourly-forecast-card';
+
 import { WeatherView } from './store/weather-view';
+import { WeatherStore } from './store/weather.store';
 
 @Component({
   selector: 'app-root',
@@ -16,8 +15,6 @@ import { WeatherView } from './store/weather-view';
   providers: [WeatherView],
   templateUrl: './app.html',
 })
-export class App implements OnInit {
+export class App {
   protected store = inject(WeatherStore);
-
-  ngOnInit = (): void => initFlowbite();
 }

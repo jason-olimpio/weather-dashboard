@@ -9,9 +9,9 @@
       class="inline-flex items-center justify-center gap-2 text-white bg-slate-800 box-border border border-transparent hover:bg-slate-700 shadow-xs rounded-base text-sm px-4 py-2"
       type="button"
     >
-      <img src="images/icon-units.svg" />
+      <img src="images/icon-units.svg" alt="Units" />
       Units
-      <img src="images/icon-dropdown.svg" />
+      <img src="images/icon-dropdown.svg" alt="Dropdown" />
     </button>
 
     <div
@@ -19,35 +19,36 @@
       class="z-10 p-2 hidden bg-slate-800 border border-slate-700 rounded-base shadow-lg w-44"
     >
       @if (store.units(); as units) {
-      <button
-        class="w-full text-left p-2 text-sm text-white hover:bg-slate-700 rounded-md focus:ring-1 focus:ring-white"
-        (click)="store.toggleImperial()"
-      >
-        {{ units.system === 'imperial' ? 'Switch to metric' : 'Switch to imperial' }}
-      </button>
+        <button
+          class="w-full text-left p-2 text-sm text-white hover:bg-slate-700 rounded-md focus:ring-1 focus:ring-white"
+          (click)="store.toggleImperial()"
+        >
+          {{ units.system === 'imperial' ? 'Switch to metric' : 'Switch to imperial' }}
+        </button>
 
-      @for (section of unitSections; track section.key; let lastSection = $last) {
-      <h3 class="pt-2 px-2 text-xs text-gray-400">{{ section.title }}</h3>
+        @for (section of unitSections; track section.key; let lastSection = $last) {
+          <h3 class="pt-2 px-2 text-xs text-gray-400">{{ section.title }}</h3>
 
-      <ul class="border-gray-600" [class.border-b]="!lastSection" [class.pb-2]="!lastSection">
-        @for (option of section.options; track option.value) {
-        <li>
-          <button
-            class="w-full text-left p-2 mt-1 text-sm hover:bg-slate-700 rounded-md focus:ring-1 focus:ring-white flex items-center justify-between group transition-colors"
-            [class.text-white]="units[section.key] === option.value"
-            [class.text-gray-200]="units[section.key] !== option.value"
-            (click)="store.setUnit(section.key, option.value)"
-          >
-            <span>{{ option.label }}</span>
+          <ul class="border-gray-600" [class.border-b]="!lastSection" [class.pb-2]="!lastSection">
+            @for (option of section.options; track option.value) {
+              <li>
+                <button
+                  class="w-full text-left p-2 mt-1 text-sm hover:bg-slate-700 rounded-md focus:ring-1 focus:ring-white flex items-center justify-between group transition-colors"
+                  [class.text-white]="units[section.key] === option.value"
+                  [class.text-gray-200]="units[section.key] !== option.value"
+                  (click)="store.setUnit(section.key, option.value)"
+                >
+                  <span>{{ option.label }}</span>
 
-            @if (units[section.key] === option.value) {
-            <img src="images/icon-checkmark.svg" alt="Selected" class="w-4 h-4" />
+                  @if (units[section.key] === option.value) {
+                    <img src="images/icon-checkmark.svg" alt="Selected" class="w-4 h-4" />
+                  }
+                </button>
+              </li>
             }
-          </button>
-        </li>
+          </ul>
         }
-      </ul>
-      } }
+      }
     </div>
   </div>
 </header>

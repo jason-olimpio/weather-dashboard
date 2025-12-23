@@ -1,0 +1,17 @@
+# Dependencies
+node_modules
+
+# Angular build / tooling output
+dist
+coverage
+.angular
+out-tsc
+
+# Package manager artifacts (optional)
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Optional: generated API clients / codegen
+**/*.gen.ts
+**/*.generated.ts

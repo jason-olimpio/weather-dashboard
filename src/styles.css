@@ -1,37 +1,36 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import "tailwindcss";
+@import 'tailwindcss';
 
-@import "flowbite/src/themes/default";
+@import 'flowbite/src/themes/default';
 
 @plugin "flowbite/plugin";
 @source "../node_modules/flowbite";
 
 @font-face {
-  font-family: "DM Sans";
-  src: url("/fonts/DM_Sans/DMSans-Regular.woff2") format("woff2");
+  font-family: 'DM Sans';
+  src: url('/fonts/DM_Sans/DMSans-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "DM Sans";
-  src: url("/fonts/DM_Sans/DMSans-VariableFont_opsz,wght.ttf") format("truetype");
+  font-family: 'DM Sans';
+  src: url('/fonts/DM_Sans/DMSans-VariableFont_opsz,wght.ttf') format('truetype');
   font-style: normal;
   font-weight: 100 1000;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "DM Sans";
-  src: url("/fonts/DM_Sans/DMSans-Italic-VariableFont_opsz,wght.ttf") format("truetype");
+  font-family: 'DM Sans';
+  src: url('/fonts/DM_Sans/DMSans-Italic-VariableFont_opsz,wght.ttf') format('truetype');
   font-style: italic;
   font-weight: 100 1000;
   font-display: swap;
 }
 
 :root {
-  font-family: "DM Sans", system-ui, sans-serif;
+  font-family: 'DM Sans', system-ui, sans-serif;
 }
-

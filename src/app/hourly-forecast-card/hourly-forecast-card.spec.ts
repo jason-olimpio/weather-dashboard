@@ -8,9 +8,8 @@ describe('HourlyForecastCard', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HourlyForecastCard]
-    })
-    .compileComponents();
+      imports: [HourlyForecastCard],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(HourlyForecastCard);
     component = fixture.componentInstance;

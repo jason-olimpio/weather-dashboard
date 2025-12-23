@@ -17,6 +17,6 @@ export class WeatherCard {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
-    })
+    }),
   );
 }

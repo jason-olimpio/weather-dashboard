@@ -1,6 +1,6 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { combineLatest, of } from 'rxjs';
+import { combineLatest } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs/operators';
 
 import {
@@ -10,15 +10,9 @@ import {
   ForecastResponse,
 } from '../open-meteo.service';
 
-export interface HourlyForecast {
-  time: Date;
-  temperature: number;
-  weathercode: number;
-}
-
 @Injectable({ providedIn: 'root' })
 export class WeatherStore {
-  constructor(protected api: OpenMeteoService) {}
+  readonly api = inject(OpenMeteoService);
 
   readonly locationQuery = signal('');
   readonly selectedLocation = signal<LocationResult | null>(null);
@@ -33,6 +27,13 @@ export class WeatherStore {
   readonly isForecasting = signal(false);
 
   readonly selectedForecastDay = signal<number>(1);
+  readonly allHourly = signal<
+    { time: string; dayIndex: number; temperature: number; weathercode: number }[]
+  >([]);
+
+  hourlyForSelectedDay = computed(() =>
+    this.allHourly().filter((hourly) => hourly.dayIndex === this.selectedForecastDay()),
+  );
 
   private readonly locationResults$ = toObservable(this.locationQuery).pipe(
     map((query) => query.trim()),
@@ -42,8 +43,9 @@ export class WeatherStore {
     tap(() => this.selectedLocation.set(null)),
     switchMap((query) => {
       this.isGeocoding.set(true);
+
       return this.api.geocode(query, 10).pipe(tap({ complete: () => this.isGeocoding.set(false) }));
-    })
+    }),
   );
 
   readonly locationResults = toSignal(this.locationResults$, {
@@ -59,8 +61,8 @@ export class WeatherStore {
     switchMap(([location, units]) =>
       this.api
         .forecast(location!.latitude, location!.longitude, units)
-        .pipe(tap({ complete: () => this.isForecasting.set(false) }))
-    )
+        .pipe(tap({ complete: () => this.isForecasting.set(false) })),
+    ),
   );
 
   readonly forecast = toSignal<ForecastResponse | null>(this.forecast$, {
@@ -69,7 +71,8 @@ export class WeatherStore {
 
   toggleImperial = () =>
     this.units.update((previousUnit) => {
-      const system: any = previousUnit.system === 'imperial' ? 'metric' : 'imperial';
+      const system = previousUnit.system === 'imperial' ? 'metric' : 'imperial';
+
       return {
         ...previousUnit,
         system,
@@ -79,7 +82,7 @@ export class WeatherStore {
       };
     });
 
-  setUnit = (key: keyof UnitsState, value: any) =>
+  setUnit = (key: keyof UnitsState, value: string) =>
     this.units.update((previousUnit) => ({ ...previousUnit, [key]: value }));
 
   setSelectedForecastDay = (day: string | number) =>

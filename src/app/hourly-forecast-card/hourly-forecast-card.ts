@@ -1,4 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { AfterViewInit, Component, inject } from '@angular/core';
+import { initFlowbite } from 'flowbite';
 
 import { WeatherView } from '../store/weather-view';
 import { WeatherStore } from '../store/weather.store';
@@ -8,7 +9,11 @@ import { WeatherStore } from '../store/weather.store';
   imports: [],
   templateUrl: './hourly-forecast-card.html',
 })
-export class HourlyForecastCard {
-  protected store = inject(WeatherStore)
+export class HourlyForecastCard implements AfterViewInit {
+  protected store = inject(WeatherStore);
   protected view = inject(WeatherView);
+
+  ngAfterViewInit() {
+    initFlowbite();
+  }
 }

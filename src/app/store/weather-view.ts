@@ -1,6 +1,8 @@
 import { Injectable, computed, inject } from '@angular/core';
 import { WeatherStore } from './weather.store';
 
+import { addDays, format, isSameDay, parseISO, startOfDay } from 'date-fns';
+
 export type HourlyForecastItem = {
   time: Date;
   temperature: number;
@@ -13,30 +15,34 @@ export class WeatherView {
   private store = inject(WeatherStore);
 
   readonly showLocationDropdown = computed(
-    () => this.store.locationQuery().trim().length >= 2 && this.store.locationResults().length > 0
+    () => this.store.locationQuery().trim().length >= 2 && this.store.locationResults().length > 0,
   );
 
-  readonly hourlyForecast = computed(() => {
+  readonly hourlyForecast = computed<HourlyForecastItem[]>(() => {
     const forecast = this.store.forecast();
     const hourly = forecast?.hourly;
 
     if (!hourly?.time?.length || !hourly.temperature_2m?.length) return [];
 
+    const selectedDayIndex = this.store.selectedForecastDay();
     const currentCode = forecast?.current?.weathercode ?? 0;
+    const targetDate = addDays(startOfDay(new Date()), selectedDayIndex - 1);
 
-    return hourly.time.slice(0, 8).map((time, i) => {
-      const date = new Date(time);
-      const hours = date.getHours();
-      const hour12 = hours % 12 || 12;
-      const period = hours >= 12 ? 'PM' : 'AM';
+    const rows = hourly.time
+      .map((timestampIso, index) => ({ timestampIso, index }))
+      .filter(({ timestampIso }) => isSameDay(parseISO(timestampIso), targetDate))
+      .map(({ timestampIso, index }) => {
+        const date = parseISO(timestampIso);
 
-      return {
-        time: date,
-        temperature: hourly.temperature_2m[i],
-        weathercode: hourly.weathercode?.[i] ?? currentCode,
-        displayTime: `${hour12} ${period}`,
-      };
-    });
+        return {
+          time: date,
+          temperature: hourly.temperature_2m[index],
+          weathercode: hourly.weathercode?.[index] ?? currentCode,
+          displayTime: format(date, 'h a'),
+        };
+      });
+
+    return rows.slice(0, 8);
   });
 
   getWeatherIcon(code: number): string {
