@@ -1,10 +1,12 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { NgClass } from '@angular/common';
+
 import { WeatherStore } from '../store/weather.store';
 import { WeatherView } from '../store/weather-view';
 
 @Component({
   selector: 'app-weather-card',
-  imports: [],
+  imports: [NgClass],
   templateUrl: './weather-card.html',
 })
 export class WeatherCard {
