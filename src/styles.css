@@ -23,6 +23,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/fonts/DM_Sans/DMSans-Italic-VariableFont_opsz,wght.ttf') format('truetype');
+  font-style: italic;
+  font-weight: 100 1000;
+  font-display: swap;
+}
+
 :root {
   font-family: 'DM Sans', system-ui, sans-serif;
 }
