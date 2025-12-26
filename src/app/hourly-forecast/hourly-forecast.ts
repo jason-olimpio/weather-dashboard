@@ -5,9 +5,9 @@ import { WeatherView } from '../store/weather-view';
 import { WeatherStore } from '../store/weather.store';
 
 @Component({
-  selector: 'app-hourly-forecast-card',
+  selector: 'app-hourly-forecast',
   imports: [],
-  templateUrl: './hourly-forecast-card.html',
+  templateUrl: './hourly-forecast.html',
 })
 export class HourlyForecastCard implements AfterViewInit {
   protected store = inject(WeatherStore);

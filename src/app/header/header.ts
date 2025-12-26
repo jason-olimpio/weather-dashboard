@@ -43,8 +43,8 @@ export class Header {
       key: 'precipitation',
       title: 'Precipitation',
       options: [
-        { value: 'mm', label: 'mm' },
-        { value: 'in', label: 'in' },
+        { value: 'mm', label: 'Millimeters (mm)' },
+        { value: 'in', label: 'Inches (in)' },
       ],
     },
   ] as const satisfies readonly UnitSection[];

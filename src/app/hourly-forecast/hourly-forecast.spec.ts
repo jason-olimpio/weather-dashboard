@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HourlyForecastCard } from './hourly-forecast-card';
+import { HourlyForecastCard } from './hourly-forecast';
 
 describe('HourlyForecastCard', () => {
   let component: HourlyForecastCard;

@@ -1,30 +1,32 @@
 <a
-  class="relative flex items-center justify-between h-70 max-w-200 p-6 rounded-base shadow-xs bg-slate-800"
+  class="relative flex items-center justify-between h-70 p-6 w-full rounded-base shadow-xs bg-slate-800"
   [style.background-image]="!store.isForecasting() ? 'url(/images/bg-today-large.svg)' : 'none'"
   [style.background-size]="'cover'"
   [style.background-position]="'center'"
 >
   <div
-    class="absolute inset-0 px-8 flex items-center justify-between transition-opacity duration-200"
+    class="absolute flex-col sm:flex-row inset-0 px-8 flex items-center justify-center sm:justify-between transition-opacity duration-200"
     [class.opacity-0]="store.isForecasting()"
   >
     <div>
-      <h5 class="mb-3 text-2xl font-semibold tracking-tight text-white leading-8">
+      <h5 class="mb-3 sm:text-2xl text-lg font-semibold tracking-tight text-white leading-8 text-center sm:text-left">
         {{ store.selectedLocation()?.name }}, {{ store.selectedLocation()?.country }}
       </h5>
 
-      <p class="text-gray-200">{{ today() }}</p>
+      <p class="text-sm sm:text-md text-gray-200 text-center sm:text-left">
+        {{ today() }}
+      </p>
     </div>
 
     <div class="flex flex-row gap-10 items-center">
       <img
-        [src]="view.getWeatherIcon(store.forecast()?.current?.weathercode ?? -1)"
+        [src]="view.getWeatherIcon(store.forecast()?.current?.weather_code ?? 0)"
         class="w-20 h-20"
         alt="Weather"
       />
 
-      <h1 class="text-white text-7xl font-bold italic">
-        {{ store.forecast()?.current?.temperature_2m }}°
+      <h1 class="text-white text-4xl sm:text-7xl font-bold italic">
+        {{ temperature() }}
       </h1>
     </div>
   </div>

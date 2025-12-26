@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { map } from 'rxjs/operators';
 
@@ -24,29 +24,39 @@ export type TemperatureUnit = 'celsius' | 'fahrenheit';
 export type WindUnit = 'kmh' | 'mph';
 export type PrecipitationUnit = 'mm' | 'in';
 
+const CURRENT_VARS = [
+  'temperature_2m',
+  'weather_code',
+  'apparent_temperature',
+  'relative_humidity_2m',
+  'wind_speed_10m',
+  'precipitation',
+] as const;
+
+const HOURLY_VARS = ['temperature_2m', 'weather_code'] as const;
+
+const DAILY_VARS = ['weather_code', 'temperature_2m_max', 'temperature_2m_min'] as const;
+
 export type ForecastResponse = {
-  current: CurrentWeather;
+  current: {
+    temperature_2m: number;
+    weather_code: number;
+    apparent_temperature: number;
+    relative_humidity_2m: number;
+    wind_speed_10m: number;
+    precipitation: number;
+  };
   hourly: {
     time: string[];
     temperature_2m: number[];
-    precipitation: number[];
-    wind_speed_10m: number[];
-    weathercode: number[];
+    weather_code: number[];
   };
   daily: {
     time: string[];
+    weather_code: number[];
     temperature_2m_max: number[];
     temperature_2m_min: number[];
-    precipitation_sum: number[];
   };
-};
-
-type CurrentWeather = {
-  time: string;
-  temperature_2m: number;
-  weathercode: number;
-  wind_speed_10m?: number;
-  precipitation?: number;
 };
 
 @Injectable({ providedIn: 'root' })
@@ -54,27 +64,27 @@ export class OpenMeteoService {
   private http = inject(HttpClient);
 
   geocode(name: string, count = 10) {
-    const params = new HttpParams().set('name', name).set('count', count);
+    const params = { name, count };
 
     return this.http
-      .get<{ results?: LocationResult[] }>('https://geocoding-api.open-meteo.com/v1/search', {
-        params,
-      })
+      .get<{
+        results?: LocationResult[];
+      }>('https://geocoding-api.open-meteo.com/v1/search', { params })
       .pipe(map(({ results }) => results ?? []));
   }
 
-  forecast(latitude: number, longitude: number, units: UnitsState) {
-    const params = new HttpParams()
-      .set('latitude', latitude)
-      .set('longitude', longitude)
-      .set('timezone', 'auto')
-      .set('current', 'temperature_2m,weathercode,wind_speed_10m')
-      .set('hourly', 'temperature_2m,precipitation,wind_speed_10m')
-      .set('daily', 'temperature_2m_max,temperature_2m_min,precipitation_sum')
-      .set('temperature_unit', units.temperature)
-      .set('wind_speed_unit', units.wind === 'kmh' ? 'kmh' : 'mph')
-      .set('precipitation_unit', units.precipitation === 'mm' ? 'mm' : 'inch');
-
-    return this.http.get<ForecastResponse>('https://api.open-meteo.com/v1/forecast', { params });
-  }
+  forecast = (latitude: number, longitude: number, units: UnitsState) =>
+    this.http.get<ForecastResponse>('https://api.open-meteo.com/v1/forecast', {
+      params: {
+        latitude,
+        longitude,
+        timezone: 'auto',
+        current: CURRENT_VARS.join(','),
+        hourly: HOURLY_VARS.join(','),
+        daily: DAILY_VARS.join(','),
+        temperature_unit: units.temperature,
+        windspeed_unit: units.wind,
+        precipitation_unit: units.precipitation === 'mm' ? 'mm' : 'inch',
+      },
+    });
 }

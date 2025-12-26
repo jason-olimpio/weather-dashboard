@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { WeatherStore } from '../store/weather.store';
 import { WeatherView } from '../store/weather-view';
 
@@ -19,4 +19,11 @@ export class WeatherCard {
       year: 'numeric',
     }),
   );
+
+  readonly temperature = computed(() => {
+    const value = this.store.forecast()?.current?.temperature_2m;
+    const unit = this.store.units().temperature === 'celsius' ? '°C' : '°F';
+
+    return `${value} ${unit}`;
+  });
 }

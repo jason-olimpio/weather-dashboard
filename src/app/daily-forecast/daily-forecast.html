@@ -1,0 +1,29 @@
+<h1 class="text-md text-white font-bold my-3">Daily Forecast</h1>
+
+<div class="grid grid-cols-3 sm:grid-cols-7 gap-4 overflow-x-auto">
+  @for (day of cards(); track day.key) {
+    <div
+      class="bg-slate-800 w-24 py-4 rounded-md shadow-md flex flex-col gap-5 justify-between"
+      [class.animate-pulse]="day.isPlaceholder"
+    >
+      <div class="flex flex-col items-center">
+        <p class="text-white mb-2" [class.invisible]="day.isPlaceholder">{{ day.displayDay }}</p>
+
+        <img
+          [src]="view.getWeatherIcon(day.weatherCode)"
+          alt="Weather icon"
+          class="h-12 w-12"
+          [class.invisible]="day.isPlaceholder"
+        />
+      </div>
+
+      <div
+        class="px-2 flex justify-between text-xs text-white"
+        [class.invisible]="day.isPlaceholder"
+      >
+        <p>{{ day.temperatureMin }}</p>
+        <p>{{ day.temperatureMax }}</p>
+      </div>
+    </div>
+  }
+</div>

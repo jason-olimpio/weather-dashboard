@@ -1,22 +1,52 @@
 import { Injectable, computed, inject } from '@angular/core';
 import { WeatherStore } from './weather.store';
-
 import { addDays, format, isSameDay, parseISO, startOfDay } from 'date-fns';
 
-export type HourlyForecastItem = {
-  time: Date;
-  temperature: number;
-  weathercode: number;
+type HourlyForecastItem = {
+  date: Date;
+  temperature: string;
+  weatherCode: number;
   displayTime: string;
+};
+
+type DailyForecastItem = {
+  date: Date;
+  displayDay: string;
+  temperatureMin: string;
+  temperatureMax: string;
+  weatherCode: number;
 };
 
 @Injectable()
 export class WeatherView {
-  private store = inject(WeatherStore);
+  protected store = inject(WeatherStore);
 
   readonly showLocationDropdown = computed(
     () => this.store.locationQuery().trim().length >= 2 && this.store.locationResults().length > 0,
   );
+
+  readonly dailyForecast = computed<DailyForecastItem[]>(() => {
+    const forecast = this.store.forecast();
+    const daily = forecast?.daily;
+
+    if (!daily?.time?.length) return [];
+
+    const unit = this.store.units().temperature === 'celsius' ? '°C' : '°F';
+
+    return daily.time
+      .map((iso, i) => {
+        const date = parseISO(iso);
+
+        return {
+          date,
+          displayDay: format(date, 'EEE'),
+          temperatureMin: `${daily.temperature_2m_min[i]} ${unit}`,
+          temperatureMax: `${daily.temperature_2m_max[i]} ${unit}`,
+          weatherCode: daily.weather_code[i],
+        };
+      })
+      .slice(0, 8);
+  });
 
   readonly hourlyForecast = computed<HourlyForecastItem[]>(() => {
     const forecast = this.store.forecast();
@@ -25,8 +55,12 @@ export class WeatherView {
     if (!hourly?.time?.length || !hourly.temperature_2m?.length) return [];
 
     const selectedDayIndex = this.store.selectedForecastDay();
-    const currentCode = forecast?.current?.weathercode ?? 0;
     const targetDate = addDays(startOfDay(new Date()), selectedDayIndex - 1);
+
+    const unit = this.store.units().temperature === 'celsius' ? '°C' : '°F';
+
+    const fallbackCode = forecast?.current?.weather_code;
+    const fallback: number = typeof fallbackCode === 'number' ? fallbackCode : 0;
 
     const rows = hourly.time
       .map((timestampIso, index) => ({ timestampIso, index }))
@@ -34,16 +68,21 @@ export class WeatherView {
       .map(({ timestampIso, index }) => {
         const date = parseISO(timestampIso);
 
+        const codeSource = hourly.weather_code;
+        const code: number = Array.isArray(codeSource) ? (codeSource[index] ?? fallback) : fallback;
+
         return {
-          time: date,
-          temperature: hourly.temperature_2m[index],
-          weathercode: hourly.weathercode?.[index] ?? currentCode,
+          date,
+          temperature: `${hourly.temperature_2m[index]} ${unit}`,
+          weatherCode: code,
           displayTime: format(date, 'h a'),
         };
       });
 
     return rows.slice(0, 8);
   });
+
+  readonly hasResults = computed(() => this.store.locationResults().length > 0);
 
   getWeatherIcon(code: number): string {
     const iconMap: Record<number, string> = {
@@ -70,9 +109,9 @@ export class WeatherView {
     return `./images/${iconMap[code] || 'icon-loading.svg'}`;
   }
 
-  getDayName(day: number): string {
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    
-    return days[day - 1] || 'Monday';
+  getForecastDayLabel(dayIndex: number): string {
+    const date = addDays(startOfDay(new Date()), dayIndex - 1);
+
+    return format(date, 'EEEE');
   }
 }
