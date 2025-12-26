@@ -43,4 +43,4 @@ npm run build
   - 1 character returns empty; 2 characters only exact matches; 3+ enables fuzzy matching.
 - Forecast endpoint: `https://api.open-meteo.com/v1/forecast`
   - Configure variables/units via query parameters.
-```
+

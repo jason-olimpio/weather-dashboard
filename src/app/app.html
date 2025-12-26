@@ -14,7 +14,7 @@
 
     <app-search-bar />
 
-    @if (!view.hasResults()) {
+    @if (view.showNoResultsMessage()) {
       <h2 class="mt-10 text-center text-2xl font-bold text-white">No search results found!</h2>
     }
 

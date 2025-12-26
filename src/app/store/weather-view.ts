@@ -82,7 +82,16 @@ export class WeatherView {
     return rows.slice(0, 8);
   });
 
-  readonly hasResults = computed(() => this.store.locationResults().length > 0);
+  readonly showNoResultsMessage = computed(() => {
+    const queryText = this.store.locationQuery().trim();
+
+    const canEvaluate =
+      queryText.length >= 2 && !this.store.isGeocoding() && !this.store.hasGeocodingError();
+
+    const hasResults = this.store.locationResults().length > 0;
+
+    return canEvaluate && !hasResults;
+  });
 
   getWeatherIcon(code: number): string {
     const iconMap: Record<number, string> = {
